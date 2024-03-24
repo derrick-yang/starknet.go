@@ -116,6 +116,26 @@ func (provider *Provider) TransactionReceipt(ctx context.Context, transactionHas
 	return &receipt, nil
 }
 
+// InvokeTransactionReceipt fetches the transaction receipt for a given transaction hash, only for invoke transaction.
+//
+// Parameters:
+// - ctx: the context.Context object for the request
+// - transactionHash: the hash of the transaction as a Felt
+// Returns:
+// - InvokeTransactionReceipt: the transaction receipt
+// - error: an error if any
+func (provider *Provider) InvokeTransactionReceipt(ctx context.Context, transactionHash *felt.Felt) (*InvokeTransactionReceipt, error) {
+	var receipt InvokeTransactionReceipt
+	err := do(ctx, provider.c, "starknet_getTransactionReceipt", &receipt, transactionHash)
+	if err != nil {
+		return nil, tryUnwrapToRPCErr(err, ErrHashNotFound)
+	}
+	if receipt.Type != TransactionType_Invoke {
+		return nil, fmt.Errorf("%s is not a invoke transaction", transactionHash.String())
+	}
+	return &receipt, nil
+}
+
 // GetTransactionStatus gets the transaction status (possibly reflecting that the tx is still in the mempool, or dropped from it)
 // Parameters:
 // - ctx: the context.Context object for cancellation and timeouts.
