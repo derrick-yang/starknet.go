@@ -128,7 +128,15 @@ func (tt TransactionType) MarshalJSON() ([]byte, error) {
 }
 
 // InvokeTransactionReceipt Invoke Transaction Receipt
-type InvokeTransactionReceipt CommonTransactionReceipt
+type InvokeTransactionReceipt struct {
+	CommonTransactionReceipt
+	BlockHash   *felt.Felt `json:"block_hash,omitempty"`
+	BlockNumber *uint64    `json:"block_number,omitempty"`
+	ActualFee   struct {
+		Amount felt.Felt `json:"amount"`
+		Unit   string    `json:"unit"`
+	} `json:"actual_fee,omitempty"`
+}
 
 // Hash returns the hash of the invoke transaction receipt.
 //
